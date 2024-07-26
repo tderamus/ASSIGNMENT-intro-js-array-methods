@@ -18,7 +18,11 @@ const renderCards = (array) => {
 // .findIndex() & (.includes() - string method)
 const toggleCart = (event) => {
   if (event.target.id.includes("fav-btn")) {
-   console.log('Clicked Fav btn')
+   const [, id] = event.target.id.split('--');
+   const index = referenceList.findIndex(indexValue => indexValue.id === Number(id))
+   referenceList[index].inCart = !referenceList[index].inCart
+   cartTotal();
+   renderCards(referenceList);
   }
 }
 
@@ -26,23 +30,30 @@ const toggleCart = (event) => {
 // .filter()
 const search = (event) => {
   const eventLC = event.target.value.toLowerCase();
-  console.log(eventLC)
+  const searchResults = referenceList.filter(searchItem => 
+    searchItem.title.toLowerCase().includes(eventLC) ||
+    searchItem.author.toLowerCase().includes(eventLC) ||
+    searchItem.description.toLowerCase().includes(eventLC)
+  )
+  renderCards(searchResults);
 }
 
 // BUTTON FILTER
 // .filter() & .reduce() &.sort() - chaining
 const buttonFilter = (event) => {
   if(event.target.id.includes('free')) {
-    console.log('FREE')
+    const free = referenceList.filter(freeItem  => freeItem.price <= 0);
+    renderCards(free)
   }
   if(event.target.id.includes('cartFilter')) {
     console.log('cartFilter')
   }
   if(event.target.id.includes('books')) {
-    console.log('books!')
+    const books = referenceList.filter(bookItem => bookItem.type.toLocaleLowerCase() === 'book'); 
+    renderCards(books);
   }
   if(event.target.id.includes('clearFilter')) {
-    console.log('clearFilter')
+    renderCards(referenceList);
   }
   if(event.target.id.includes('productList')) {
     let table = `<table class="table table-dark table-striped" style="width: 600px">
@@ -77,7 +88,11 @@ const cartTotal = () => {
 // RESHAPE DATA TO RENDER TO DOM
 // .map()
 const productList = () => {
-  return [{ title: "SAMPLE TITLE", price: 45.00, type: "SAMPLE TYPE" }]
+  return referenceList.map(cardItem => ({
+    title: cardItem.title, 
+    price: cardItem.price,
+    type: cardItem.type
+  }))
 }
 
 
